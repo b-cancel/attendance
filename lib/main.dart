@@ -153,23 +153,19 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                     bottom: 8.0,
                   ),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Flexible(
-                        child: NumberField(
-                          textEditingController: thoseWhoAnsweredThePoll,
-                          label: "this many ANSWERED the poll",
-                        ),
+                      NumberField(
+                        textEditingController: thoseWhoAnsweredThePoll,
+                        label: "this many ANSWERED the poll",
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text("out of"),
                       ),
-                      Flexible(
-                        child: NumberField(
-                          textEditingController: thoseWhoReceivedThePoll,
-                          label: "this many that RECEIVED the poll ",
-                        ),
+                      NumberField(
+                        textEditingController: thoseWhoReceivedThePoll,
+                        label: "this many that RECEIVED the poll ",
                       ),
                     ],
                   ),
@@ -325,7 +321,12 @@ class NumberField extends StatelessWidget {
         FilteringTextInputFormatter.digitsOnly,
       ],
       textInputAction: TextInputAction.next,
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.phone,
+      /*
+      onEditingComplete: () {
+        FocusScope.of(context).nextFocus();
+      },
+      */
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(),
