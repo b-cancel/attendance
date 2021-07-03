@@ -143,27 +143,24 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                     bottom: 8.0,
                   ),
-                  child: Row(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Flexible(
-                        child: NumberField(
-                          focusNode: answerCountFN,
-                          textEditingController: answerCount,
-                          nextFocusNode: participantCountFN,
-                          suffix: "answered the poll",
-                        ),
+                      NumberField(
+                        focusNode: answerCountFN,
+                        textEditingController: answerCount,
+                        nextFocusNode: participantCountFN,
+                        suffix: "answered the poll",
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text("out of"),
                       ),
-                      Flexible(
-                        child: NumberField(
-                          focusNode: participantCountFN,
-                          textEditingController: participantCount,
-                          nextFocusNode: answered0FN,
-                          suffix: "participants",
-                        ),
+                      NumberField(
+                        focusNode: participantCountFN,
+                        textEditingController: participantCount,
+                        nextFocusNode: answered0FN,
+                        suffix: "participants",
                       ),
                     ],
                   ),
@@ -333,6 +330,19 @@ class NumberField extends StatelessWidget {
   final FocusNode nextFocusNode;
   final String suffix;
 
+  focusAfterUnfocused(BuildContext context) async {
+    if (FocusScope.of(context).hasFocus) {
+      await Future.delayed(
+        Duration(milliseconds: 100),
+      );
+      focusAfterUnfocused(context);
+    } else {
+      FocusScope.of(context).requestFocus(
+        nextFocusNode,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextField(
@@ -344,8 +354,14 @@ class NumberField extends StatelessWidget {
       textInputAction: TextInputAction.next,
       keyboardType: TextInputType.phone,
       onEditingComplete: () {
-        FocusScope.of(context).requestFocus(
-          nextFocusNode,
+        //start the unfocus
+        FocusScope.of(context).unfocus(
+          disposition: UnfocusDisposition.previouslyFocusedChild,
+        );
+
+        //create a loop so that things work in the most ammount of browsers
+        focusAfterUnfocused(
+          context,
         );
       },
       decoration: InputDecoration(
