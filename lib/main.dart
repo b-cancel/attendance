@@ -17,21 +17,34 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  TextEditingController thoseWhoAnsweredThePoll = TextEditingController();
-  TextEditingController thoseWhoReceivedThePoll = TextEditingController();
-  TextEditingController thoseWhoCalledIn = TextEditingController();
+  FocusNode answerCountFN = FocusNode();
+  TextEditingController answerCount = TextEditingController();
+  FocusNode participantCountFN = FocusNode();
+  TextEditingController participantCount = TextEditingController();
+  FocusNode answered0FN = FocusNode();
   TextEditingController answered0 = TextEditingController();
+  FocusNode answered1FN = FocusNode();
   TextEditingController answered1 = TextEditingController();
+  FocusNode answered2FN = FocusNode();
   TextEditingController answered2 = TextEditingController();
+  FocusNode answered3FN = FocusNode();
   TextEditingController answered3 = TextEditingController();
+  FocusNode answered4FN = FocusNode();
   TextEditingController answered4 = TextEditingController();
+  FocusNode answered5FN = FocusNode();
   TextEditingController answered5 = TextEditingController();
+  FocusNode answered6FN = FocusNode();
   TextEditingController answered6 = TextEditingController();
+  FocusNode answered7FN = FocusNode();
   TextEditingController answered7 = TextEditingController();
+  FocusNode answered8FN = FocusNode();
   TextEditingController answered8 = TextEditingController();
+  FocusNode answered9FN = FocusNode();
   TextEditingController answered9 = TextEditingController();
+  FocusNode answered10FN = FocusNode();
   TextEditingController answered10 = TextEditingController();
-  String countDisplay = "Type Numbers In Fields";
+  String countDisplay =
+      "Fill In The Fields" + "\n" + "I'll Do The Math For You";
 
   updateState() {
     if (mounted) {
@@ -41,14 +54,11 @@ class _MyAppState extends State<MyApp> {
 
   recalcTotal() {
     //answered includes 0s
-    int answered = int.tryParse(thoseWhoAnsweredThePoll.text) ?? 0;
-    int received = int.tryParse(thoseWhoReceivedThePoll.text) ?? 0;
+    int answers = int.tryParse(answerCount.text) ?? 0;
+    int participants = int.tryParse(participantCount.text) ?? 0;
 
     //special cases
-    int called = int.tryParse(thoseWhoCalledIn.text) ?? 0;
     int zero = int.tryParse(answered0.text) ?? 0;
-
-    //obvious math
     int one = (int.tryParse(answered1.text) ?? 0);
     int two = (int.tryParse(answered2.text) ?? 0) * 2;
     int three = (int.tryParse(answered3.text) ?? 0) * 3;
@@ -60,20 +70,17 @@ class _MyAppState extends State<MyApp> {
     int nine = (int.tryParse(answered9.text) ?? 0) * 9;
     int ten = (int.tryParse(answered10.text) ?? 0) * 10;
 
-    //still includes those that answered 0
-    int actualReceived = received - zero;
-    int actualAnswered = answered - zero;
-    int countsUnknownZoom = (actualReceived - actualAnswered);
+    //if they answered the poll the answer is known
     int countsKnown =
         one + two + three + four + five + six + seven + eight + nine + ten;
-    int countsUnknownPhone = called;
+    int countsUnKnown = participants - answers;
 
     //sum it up
-    int total = countsUnknownZoom + countsUnknownPhone + countsKnown;
+    int total = countsUnKnown + countsKnown;
     if (total == 0) {
-      countDisplay = "Type Numbers In Fields";
+      countDisplay = "Fill In The Fields" + "\n" + "I'll Do The Math For You";
     } else {
-      countDisplay = total.toString() + " total";
+      countDisplay = total.toString() + " In Attendance";
     }
 
     //show new result
@@ -86,9 +93,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     //add listeners
-    thoseWhoAnsweredThePoll.addListener(recalcTotal);
-    thoseWhoReceivedThePoll.addListener(recalcTotal);
-    thoseWhoCalledIn.addListener(recalcTotal);
+    answerCount.addListener(recalcTotal);
+    participantCount.addListener(recalcTotal);
     answered0.addListener(recalcTotal);
     answered1.addListener(recalcTotal);
     answered2.addListener(recalcTotal);
@@ -105,9 +111,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     //remove listeners
-    thoseWhoAnsweredThePoll.removeListener(recalcTotal);
-    thoseWhoReceivedThePoll.removeListener(recalcTotal);
-    thoseWhoCalledIn.removeListener(recalcTotal);
+    answerCount.removeListener(recalcTotal);
+    participantCount.removeListener(recalcTotal);
     answered0.removeListener(recalcTotal);
     answered1.removeListener(recalcTotal);
     answered2.removeListener(recalcTotal);
@@ -136,36 +141,29 @@ class _MyAppState extends State<MyApp> {
                 Padding(
                   padding: EdgeInsets.only(
                     top: 8,
-                    bottom: 8,
-                  ),
-                  child: NumberField(
-                    textEditingController: thoseWhoCalledIn,
-                    label:
-                        "this many are connected by phone (so they DID NOT RECEIVE the poll)",
-                  ),
-                ),
-                Divider(
-                  thickness: 8,
-                  color: Colors.black,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: 8,
                     bottom: 8.0,
                   ),
-                  child: Column(
+                  child: Row(
                     children: [
-                      NumberField(
-                        textEditingController: thoseWhoAnsweredThePoll,
-                        label: "this many ANSWERED the poll",
+                      Flexible(
+                        child: NumberField(
+                          focusNode: answerCountFN,
+                          textEditingController: answerCount,
+                          nextFocusNode: participantCountFN,
+                          suffix: "answered the poll",
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text("out of"),
                       ),
-                      NumberField(
-                        textEditingController: thoseWhoReceivedThePoll,
-                        label: "this many that RECEIVED the poll ",
+                      Flexible(
+                        child: NumberField(
+                          focusNode: participantCountFN,
+                          textEditingController: participantCount,
+                          nextFocusNode: answered0FN,
+                          suffix: "participants",
+                        ),
                       ),
                     ],
                   ),
@@ -180,22 +178,21 @@ class _MyAppState extends State<MyApp> {
                     bottom: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered0FN,
                     textEditingController: answered0,
-                    label:
-                        "0 (they re-connected & so this count is removed from both of the numbers above)",
+                    nextFocusNode: answered1FN,
+                    suffix: "* 0 in attendance",
                   ),
-                ),
-                Divider(
-                  thickness: 8,
-                  color: Colors.black,
                 ),
                 Padding(
                   padding: EdgeInsets.only(
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered1FN,
                     textEditingController: answered1,
-                    label: "1 in attendance",
+                    nextFocusNode: answered2FN,
+                    suffix: "* 1 in attendance",
                   ),
                 ),
                 Padding(
@@ -203,8 +200,10 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered2FN,
                     textEditingController: answered2,
-                    label: "2 in attendance",
+                    nextFocusNode: answered3FN,
+                    suffix: "* 2 in attendance",
                   ),
                 ),
                 Padding(
@@ -212,8 +211,10 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered3FN,
                     textEditingController: answered3,
-                    label: "3 in attendance",
+                    nextFocusNode: answered4FN,
+                    suffix: "* 3 in attendance",
                   ),
                 ),
                 Padding(
@@ -221,8 +222,10 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered4FN,
                     textEditingController: answered4,
-                    label: "4 in attendance",
+                    nextFocusNode: answered5FN,
+                    suffix: "* 4 in attendance",
                   ),
                 ),
                 Padding(
@@ -230,8 +233,10 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered5FN,
                     textEditingController: answered5,
-                    label: "5 in attendance",
+                    nextFocusNode: answered6FN,
+                    suffix: "* 5 in attendance",
                   ),
                 ),
                 Padding(
@@ -239,8 +244,10 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered6FN,
                     textEditingController: answered6,
-                    label: "6 in attendance",
+                    nextFocusNode: answered7FN,
+                    suffix: "* 6 in attendance",
                   ),
                 ),
                 Padding(
@@ -248,8 +255,10 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered7FN,
                     textEditingController: answered7,
-                    label: "7 in attendance",
+                    nextFocusNode: answered8FN,
+                    suffix: "* 7 in attendance",
                   ),
                 ),
                 Padding(
@@ -257,8 +266,10 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered8FN,
                     textEditingController: answered8,
-                    label: "8 in attendance",
+                    nextFocusNode: answered9FN,
+                    suffix: "* 8 in attendance",
                   ),
                 ),
                 Padding(
@@ -266,8 +277,10 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered9FN,
                     textEditingController: answered9,
-                    label: "9 in attendance",
+                    nextFocusNode: answered10FN,
+                    suffix: "* 9 in attendance",
                   ),
                 ),
                 Padding(
@@ -275,8 +288,10 @@ class _MyAppState extends State<MyApp> {
                     top: 8,
                   ),
                   child: NumberField(
+                    focusNode: answered10FN,
                     textEditingController: answered10,
-                    label: "10 in attendance",
+                    nextFocusNode: answerCountFN,
+                    suffix: "* 10 in attendance",
                   ),
                 ),
               ],
@@ -289,6 +304,7 @@ class _MyAppState extends State<MyApp> {
             child: Center(
               child: Text(
                 countDisplay,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -306,29 +322,42 @@ class _MyAppState extends State<MyApp> {
 class NumberField extends StatelessWidget {
   const NumberField({
     required this.textEditingController,
-    required this.label,
+    required this.focusNode,
+    required this.nextFocusNode,
+    required this.suffix,
     Key? key,
   }) : super(key: key);
 
-  final String label;
   final TextEditingController textEditingController;
+  final FocusNode focusNode;
+  final FocusNode nextFocusNode;
+  final String suffix;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      focusNode: focusNode,
       controller: textEditingController,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
       ],
       textInputAction: TextInputAction.next,
       keyboardType: TextInputType.phone,
-      /*
       onEditingComplete: () {
-        FocusScope.of(context).nextFocus();
+        FocusScope.of(context).requestFocus(
+          nextFocusNode,
+        );
       },
-      */
       decoration: InputDecoration(
-        labelText: label,
+        suffixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
+        suffixIcon: Padding(
+          padding: EdgeInsets.only(
+            right: 16,
+          ),
+          child: Text(
+            " " + suffix,
+          ),
+        ),
         border: OutlineInputBorder(),
       ),
     );
